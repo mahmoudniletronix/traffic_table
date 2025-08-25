@@ -21,6 +21,15 @@ export class TrafficSignalsComponent implements OnInit, OnDestroy {
   popupY = 0;
   popupData: Traffic | null = null;
 
+  //
+  currentStatus: 'RED' | 'GREEN' | 'YELLOW' = 'RED';
+
+  // الحالة العكسية (للعمود التاني)
+  get oppositeStatus(): 'RED' | 'GREEN' | 'YELLOW' {
+    if (this.currentStatus === 'RED') return 'GREEN';
+    if (this.currentStatus === 'GREEN') return 'RED';
+    return 'YELLOW';
+  }
   // ================= Counters =================
   counters: Record<'RED' | 'GREEN' | 'YELLOW', number> = {
     RED: 0,
@@ -287,18 +296,16 @@ export class TrafficSignalsComponent implements OnInit, OnDestroy {
 
   startCounter() {
     clearInterval(this.interval);
-    if (!this.popupData) return;
 
-    this.resetCounters();
+    // reset counters
+    this.counters = { RED: 0, GREEN: 0, YELLOW: 0 };
+    this.counters[this.currentStatus] = this.duration;
 
     this.interval = setInterval(() => {
-      if (!this.popupData) return;
+      this.counters[this.currentStatus]--;
 
-      const status = this.popupData.status;
-      this.counters[status]--;
-
-      if (this.counters[status] <= 0) {
-        this.switchStatus(this.nextStatus(status));
+      if (this.counters[this.currentStatus] <= 0) {
+        this.switchStatus(this.nextStatus(this.currentStatus));
       }
     }, 1000);
   }
@@ -309,10 +316,8 @@ export class TrafficSignalsComponent implements OnInit, OnDestroy {
   }
 
   switchStatus(nextStatus: 'RED' | 'GREEN' | 'YELLOW') {
-    if (this.popupData) {
-      this.popupData.status = nextStatus;
-      this.startCounter();
-    }
+    this.currentStatus = nextStatus;
+    this.startCounter();
   }
 
   // ================= Filters Logic =================

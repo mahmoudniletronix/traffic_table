@@ -101,45 +101,45 @@
     <p class="fs-6 text-center">اتجاه الإشارة: {{ popupData?.name }}</p>
 
     <div class="status-columns">
-      <div class="status-col">
-        <h5>اتجاه الإشارة: {{ popupData?.name }}</h5>
-
-        <div class="status-box red" [class.active]="popupData?.status === 'RED'">
-          <span class="counter" *ngIf="popupData?.status === 'RED'"> {{ counters.RED }} </span>
-          🔴
+      <div class="status-columns">
+        <!-- العمود الأول -->
+        <div class="status-col">
+          <h5>اتجاه الإشارة: {{ popupData?.name }}</h5>
+          <div class="status-box red" [class.active]="currentStatus === 'RED'">
+            <span class="counter" *ngIf="currentStatus === 'RED'">{{ counters.RED }}</span>
+            🔴
+          </div>
+          <div class="status-box green" [class.active]="currentStatus === 'GREEN'">
+            <span class="counter" *ngIf="currentStatus === 'GREEN'">{{ counters.GREEN }}</span>
+            🟢
+          </div>
+          <div class="status-box yellow" [class.active]="currentStatus === 'YELLOW'">
+            <span class="counter" *ngIf="currentStatus === 'YELLOW'">{{ counters.YELLOW }}</span>
+            🟡
+          </div>
         </div>
 
-        <div class="status-box green" [class.active]="popupData?.status === 'GREEN'">
-          <span class="counter" *ngIf="popupData?.status === 'GREEN'"> {{ counters.GREEN }} </span>
-          🟢
-        </div>
-
-        <div class="status-box yellow" [class.active]="popupData?.status === 'YELLOW'">
-          <span class="counter" *ngIf="popupData?.status === 'YELLOW'">
-            {{ counters.YELLOW }}
-          </span>
-          🟡
-        </div>
-      </div>
-
-      <div class="status-col">
-        <h5>اتجاه الإشارة: {{ popupData?.name }}</h5>
-
-        <div class="status-box red" [class.active]="popupData?.status === 'RED'">
-          <span class="counter" *ngIf="popupData?.status === 'RED'"> {{ counters.RED }} </span>
-          🔴
-        </div>
-
-        <div class="status-box green" [class.active]="popupData?.status === 'GREEN'">
-          <span class="counter" *ngIf="popupData?.status === 'GREEN'"> {{ counters.GREEN }} </span>
-          🟢
-        </div>
-
-        <div class="status-box yellow" [class.active]="popupData?.status === 'YELLOW'">
-          <span class="counter" *ngIf="popupData?.status === 'YELLOW'">
-            {{ counters.YELLOW }}
-          </span>
-          🟡
+        <!-- العمود التاني (العكس) -->
+        <div class="status-col">
+          <h5>اتجاه الإشارة: {{ popupData?.name }}</h5>
+          <div class="status-box red" [class.active]="oppositeStatus === 'RED'">
+            <span class="counter" *ngIf="oppositeStatus === 'RED'">{{
+              counters[currentStatus]
+            }}</span>
+            🔴
+          </div>
+          <div class="status-box green" [class.active]="oppositeStatus === 'GREEN'">
+            <span class="counter" *ngIf="oppositeStatus === 'GREEN'">{{
+              counters[currentStatus]
+            }}</span>
+            🟢
+          </div>
+          <div class="status-box yellow" [class.active]="oppositeStatus === 'YELLOW'">
+            <span class="counter" *ngIf="oppositeStatus === 'YELLOW'">{{
+              counters[currentStatus]
+            }}</span>
+            🟡
+          </div>
         </div>
       </div>
     </div>
