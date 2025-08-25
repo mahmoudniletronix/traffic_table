@@ -14,6 +14,53 @@ export class TrafficSignalsComponent {
   pageSize: number = 10;
   currentPage: number = 1;
 
+  hoveredTraffic: Traffic | null = null;
+  popupPosition = { x: 0, y: 0 };
+  popupVisible: boolean = false;
+  popupX: number = 0;
+  popupY: number = 0;
+  popupData: any = null;
+
+  showPopup(traffic: any, event: MouseEvent) {
+    this.popupData = traffic;
+    this.popupVisible = true;
+    this.movePopup(event);
+  }
+
+  movePopup(event: MouseEvent) {
+    this.popupX = event.pageX + 15;
+    this.popupY = event.pageY + 15;
+  }
+
+  hidePopup() {
+    this.popupVisible = false;
+    this.popupData = null;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (this.hoveredTraffic) {
+      this.popupPosition.x = event.pageX + 15;
+      this.popupPosition.y = event.pageY + 15;
+    }
+    const target = event.target as HTMLElement;
+
+    if (!target.closest('.status-filter-dropdown')) {
+      this.showStatusFilter = false;
+    }
+
+    if (!target.closest('.active-filter-dropdown')) {
+      this.showActiveFilter = false;
+    }
+  }
+  rightStatus(traffic: Traffic): 'RED' | 'GREEN' {
+    return traffic.status === 'RED' ? 'RED' : 'GREEN';
+  }
+
+  leftStatus(traffic: Traffic): 'RED' | 'GREEN' {
+    return this.rightStatus(traffic) === 'RED' ? 'GREEN' : 'RED';
+  }
+
   searchTerm: string = '';
   statusFilter: { [key: string]: boolean } = {
     RED: true,
@@ -24,7 +71,7 @@ export class TrafficSignalsComponent {
   showStatusFilter: boolean = false;
   showActiveFilter: boolean = false;
 
-  tableHeaders: string[] = ['ID', 'IP Address', 'Traffic Name', 'Status', 'Active'];
+  tableHeaders: string[] = ['ID', 'IP Address', 'Traffic Name', 'Active'];
 
   traffics: Traffic[] = [
     {
@@ -252,7 +299,7 @@ export class TrafficSignalsComponent {
       const matchesSearch =
         traffic.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         traffic.id.toString().includes(this.searchTerm);
-      const matchesStatus = this.statusFilter[traffic.status];
+      const matchesStatus = this.statusFilter[traffic.active ? 'GREEN' : 'RED'];
       const matchesActive =
         this.activeFilter === 'ALL' ||
         (this.activeFilter === 'ACTIVE' && traffic.active) ||
@@ -302,8 +349,8 @@ export class TrafficSignalsComponent {
 
   changeStatus(traffic: Traffic) {
     const order: ('RED' | 'GREEN' | 'YELLOW')[] = ['RED', 'GREEN', 'YELLOW'];
-    const index = order.indexOf(traffic.status);
-    traffic.status = order[(index + 1) % order.length];
+    const index = order.indexOf(traffic.active ? 'GREEN' : 'RED');
+    traffic.name = order[(index + 1) % order.length];
   }
 
   toggleStatusFilter(status: string) {
@@ -325,18 +372,5 @@ export class TrafficSignalsComponent {
   toggleActiveFilterDropdown() {
     this.showActiveFilter = !this.showActiveFilter;
     if (this.showActiveFilter) this.showStatusFilter = false;
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-
-    if (!target.closest('.status-filter-dropdown')) {
-      this.showStatusFilter = false;
-    }
-
-    if (!target.closest('.active-filter-dropdown')) {
-      this.showActiveFilter = false;
-    }
   }
 }

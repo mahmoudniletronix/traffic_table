@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
   <div class="header">
     <h1 class="title">Traffic Signal Management</h1>
     <div class="search-container">
@@ -69,33 +69,53 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let traffic of paginatedTraffics">
+      <tr
+        *ngFor="let traffic of paginatedTraffics"
+        (mouseenter)="showPopup(traffic, $event)"
+        (mousemove)="movePopup($event)"
+        (mouseleave)="hidePopup()"
+      >
         <td>{{ traffic.id }}</td>
         <td>{{ traffic.ipAddress }}</td>
         <td>{{ traffic.name }}</td>
-        <td>
-          <div class="status-indicator">
-            <span class="status-dot" [style.background]="statusColors[traffic.status]"></span>
-            {{ traffic.status }}
-          </div>
-        </td>
         <td>
           <span [ngClass]="traffic.active ? 'active' : 'inactive'">
             {{ traffic.active ? activeLabel : inactiveLabel }}
           </span>
         </td>
-        <!-- <td>
-          <div class="action-buttons">
-            <button class="btn-sm btn-status" (click)="changeStatus(traffic)">Change Status</button>
-            <button class="btn-sm btn-toggle" (click)="toggleActive(traffic)">Toggle Active</button>
-          </div>
-        </td> -->
       </tr>
+
       <tr *ngIf="paginatedTraffics.length === 0">
         <td colspan="5" class="no-results">No traffic signals found matching your criteria</td>
       </tr>
     </tbody>
   </table>
+
+  <!-- popup -->
+  <div
+    class="traffic-popup"
+    *ngIf="popupVisible"
+    [ngStyle]="{ top: popupY + 'px', left: popupX + 'px' }"
+  >
+    <h4 class="text-center fs-6">{{ popupData?.name }}</h4>
+    <p class="fs-6 text-center">اتجاه الإشارة: {{ popupData?.name }}</p>
+
+    <div class="status-columns">
+      <div class="status-col">
+        <h5>اتجاه الإشارة: {{ popupData?.name }}</h5>
+        <div class="status-box red" [class.active]="popupData?.status === 'RED'">🔴</div>
+        <div class="status-box green" [class.active]="popupData?.status === 'GREEN'">🟢</div>
+        <div class="status-box yellow" [class.active]="popupData?.status === 'YELLOW'">🟡</div>
+      </div>
+
+      <div class="status-col">
+        <h5>اتجاه الإشارة: {{ popupData?.name }}</h5>
+        <div class="status-box red" [class.active]="popupData?.status === 'GREEN'">🔴</div>
+        <div class="status-box green" [class.active]="popupData?.status === 'RED'">🟢</div>
+        <div class="status-box yellow" [class.active]="popupData?.status !== 'YELLOW'">🟡</div>
+      </div>
+    </div>
+  </div>
 
   <div class="footer">
     <p>Showing {{ paginatedTraffics.length }} of {{ filteredTraffics.length }} traffic signals</p>

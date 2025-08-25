@@ -50,9 +50,8 @@
   padding: 20px;
 }
 
-.container {
+.container-fluid {
   width: 100%;
-  max-width: 1000px;
   background: white;
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -356,4 +355,88 @@
     right: auto;
     left: 0;
   }
+}
+/* 📌 Popup Container */
+.traffic-popup {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(10px, 10px);
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 8px 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: 160px;
+  max-width: 200px;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.traffic-popup h3 {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #222;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 4px;
+}
+
+.status-columns {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.status-col {
+  flex: 1;
+  text-align: center;
+  background: #f8f9fa;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.status-col h5 {
+  font-size: 11px;
+  margin-bottom: 6px;
+  color: #555;
+}
+
+.status-box {
+  margin: 6px 0;
+  padding: 8px;
+  font-size: 18px;
+  text-align: center;
+  transition: transform 0.2s ease, filter 0.2s ease, text-shadow 0.2s ease;
+  background: transparent;
+  border-radius: 6px;
+}
+
+.status-box.red,
+.status-box.green,
+.status-box.yellow {
+  filter: grayscale(80%) brightness(0.8);
+  opacity: 0.5;
+}
+
+.status-box.active {
+  filter: none;
+  opacity: 1;
+  transform: scale(1.2);
+  text-shadow: 0 0 12px currentColor;
+}
+
+.status-box.red.active {
+  color: #ff4757;
+}
+
+.status-box.green.active {
+  color: #2ed573;
+}
+
+.status-box.yellow.active {
+  color: #fbc531;
 }
