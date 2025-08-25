@@ -103,16 +103,44 @@
     <div class="status-columns">
       <div class="status-col">
         <h5>اتجاه الإشارة: {{ popupData?.name }}</h5>
-        <div class="status-box red" [class.active]="popupData?.status === 'RED'">🔴</div>
-        <div class="status-box green" [class.active]="popupData?.status === 'GREEN'">🟢</div>
-        <div class="status-box yellow" [class.active]="popupData?.status === 'YELLOW'">🟡</div>
+
+        <div class="status-box red" [class.active]="popupData?.status === 'RED'">
+          <span class="counter" *ngIf="popupData?.status === 'RED'"> {{ counters.RED }} </span>
+          🔴
+        </div>
+
+        <div class="status-box green" [class.active]="popupData?.status === 'GREEN'">
+          <span class="counter" *ngIf="popupData?.status === 'GREEN'"> {{ counters.GREEN }} </span>
+          🟢
+        </div>
+
+        <div class="status-box yellow" [class.active]="popupData?.status === 'YELLOW'">
+          <span class="counter" *ngIf="popupData?.status === 'YELLOW'">
+            {{ counters.YELLOW }}
+          </span>
+          🟡
+        </div>
       </div>
 
       <div class="status-col">
         <h5>اتجاه الإشارة: {{ popupData?.name }}</h5>
-        <div class="status-box red" [class.active]="popupData?.status === 'GREEN'">🔴</div>
-        <div class="status-box green" [class.active]="popupData?.status === 'RED'">🟢</div>
-        <div class="status-box yellow" [class.active]="popupData?.status !== 'YELLOW'">🟡</div>
+
+        <div class="status-box red" [class.active]="popupData?.status === 'RED'">
+          <span class="counter" *ngIf="popupData?.status === 'RED'"> {{ counters.RED }} </span>
+          🔴
+        </div>
+
+        <div class="status-box green" [class.active]="popupData?.status === 'GREEN'">
+          <span class="counter" *ngIf="popupData?.status === 'GREEN'"> {{ counters.GREEN }} </span>
+          🟢
+        </div>
+
+        <div class="status-box yellow" [class.active]="popupData?.status === 'YELLOW'">
+          <span class="counter" *ngIf="popupData?.status === 'YELLOW'">
+            {{ counters.YELLOW }}
+          </span>
+          🟡
+        </div>
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Traffic } from '../../models/traffic-signal.model';
@@ -9,70 +9,53 @@ import { Traffic } from '../../models/traffic-signal.model';
   templateUrl: './traffic-signals.html',
   styleUrls: ['./traffic-signals.css'],
 })
-export class TrafficSignalsComponent {
-  // Pagination properties
-  pageSize: number = 10;
-  currentPage: number = 1;
+export class TrafficSignalsComponent implements OnInit, OnDestroy {
+  // ================= Pagination =================
+  pageSize = 10;
+  currentPage = 1;
 
+  // ================= Popup =================
   hoveredTraffic: Traffic | null = null;
-  popupPosition = { x: 0, y: 0 };
-  popupVisible: boolean = false;
-  popupX: number = 0;
-  popupY: number = 0;
-  popupData: any = null;
+  popupVisible = false;
+  popupX = 0;
+  popupY = 0;
+  popupData: Traffic | null = null;
 
-  showPopup(traffic: any, event: MouseEvent) {
-    this.popupData = traffic;
-    this.popupVisible = true;
-    this.movePopup(event);
-  }
+  // ================= Counters =================
+  counters: Record<'RED' | 'GREEN' | 'YELLOW', number> = {
+    RED: 0,
+    GREEN: 0,
+    YELLOW: 0,
+  };
+  private counterInterval: any;
 
-  movePopup(event: MouseEvent) {
-    this.popupX = event.pageX + 15;
-    this.popupY = event.pageY + 15;
-  }
+  duration = 10;
+  interval: any;
 
-  hidePopup() {
-    this.popupVisible = false;
-    this.popupData = null;
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent) {
-    if (this.hoveredTraffic) {
-      this.popupPosition.x = event.pageX + 15;
-      this.popupPosition.y = event.pageY + 15;
-    }
-    const target = event.target as HTMLElement;
-
-    if (!target.closest('.status-filter-dropdown')) {
-      this.showStatusFilter = false;
-    }
-
-    if (!target.closest('.active-filter-dropdown')) {
-      this.showActiveFilter = false;
-    }
-  }
-  rightStatus(traffic: Traffic): 'RED' | 'GREEN' {
-    return traffic.status === 'RED' ? 'RED' : 'GREEN';
-  }
-
-  leftStatus(traffic: Traffic): 'RED' | 'GREEN' {
-    return this.rightStatus(traffic) === 'RED' ? 'GREEN' : 'RED';
-  }
-
-  searchTerm: string = '';
+  // ================= Filters =================
+  searchTerm = '';
   statusFilter: { [key: string]: boolean } = {
     RED: true,
     GREEN: true,
     YELLOW: true,
   };
-  activeFilter: string = 'ALL';
-  showStatusFilter: boolean = false;
-  showActiveFilter: boolean = false;
+  activeFilter: 'ALL' | 'ACTIVE' | 'INACTIVE' = 'ALL';
+  showStatusFilter = false;
+  showActiveFilter = false;
 
+  // ================= Table Headers =================
   tableHeaders: string[] = ['ID', 'IP Address', 'Traffic Name', 'Active'];
 
+  // ================= Colors / Labels =================
+  statusColors: { [key: string]: string } = {
+    RED: '#ff4757',
+    GREEN: '#2ed573',
+    YELLOW: '#ffa502',
+  };
+  activeLabel = 'Active';
+  inactiveLabel = 'Inactive';
+
+  // ================= Traffic Data =================
   traffics: Traffic[] = [
     {
       id: 1,
@@ -203,7 +186,7 @@ export class TrafficSignalsComponent {
     {
       id: 19,
       ipAddress: '192.168.1.119',
-      name: 'New Cairo - American University Intersection',
+      name: 'New Cairo - AUC Intersection',
       status: 'YELLOW',
       active: false,
     },
@@ -214,143 +197,138 @@ export class TrafficSignalsComponent {
       status: 'RED',
       active: true,
     },
-    {
-      id: 21,
-      ipAddress: '192.168.2.101',
-      name: 'Luxor - Karnak Temple Road',
-      status: 'GREEN',
-      active: true,
-    },
-    {
-      id: 22,
-      ipAddress: '192.168.2.102',
-      name: 'Aswan - High Dam Road',
-      status: 'YELLOW',
-      active: false,
-    },
-    {
-      id: 23,
-      ipAddress: '192.168.2.103',
-      name: 'Sharm El Sheikh - Naama Bay',
-      status: 'RED',
-      active: true,
-    },
-    {
-      id: 24,
-      ipAddress: '192.168.2.104',
-      name: 'Hurghada - Sheraton Road',
-      status: 'GREEN',
-      active: false,
-    },
-    {
-      id: 25,
-      ipAddress: '192.168.2.105',
-      name: 'Mansoura - University Street',
-      status: 'YELLOW',
-      active: true,
-    },
-    {
-      id: 26,
-      ipAddress: '192.168.2.106',
-      name: 'Tanta - El Geish Street',
-      status: 'RED',
-      active: true,
-    },
-    {
-      id: 27,
-      ipAddress: '192.168.2.107',
-      name: 'Mahalla - Industrial Zone Entrance',
-      status: 'GREEN',
-      active: true,
-    },
-    {
-      id: 28,
-      ipAddress: '192.168.2.108',
-      name: 'Damietta - Corniche Road',
-      status: 'YELLOW',
-      active: false,
-    },
-    {
-      id: 29,
-      ipAddress: '192.168.2.109',
-      name: 'Ismailia - Mohamed Ali Quay',
-      status: 'RED',
-      active: true,
-    },
-    {
-      id: 30,
-      ipAddress: '192.168.2.110',
-      name: 'Suez - Port Entrance',
-      status: 'GREEN',
-      active: true,
-    },
   ];
-  statusColors: { [key: string]: string } = {
-    RED: '#ff4757',
-    GREEN: '#2ed573',
-    YELLOW: '#ffa502',
-  };
 
-  activeLabel: string = 'Active';
-  inactiveLabel: string = 'Inactive';
+  // ================= Lifecycle =================
+  ngOnInit() {}
+  ngOnDestroy() {
+    clearInterval(this.interval);
+  }
 
+  // ================= Popup Logic =================
+  showPopup(traffic: Traffic, event: MouseEvent) {
+    this.popupData = traffic;
+    this.popupVisible = true;
+
+    this.updatePopupPosition(event);
+
+    this.startCounter();
+  }
+
+  hidePopup() {
+    this.popupVisible = false;
+    this.popupData = null;
+
+    // Stop counter
+    clearInterval(this.interval);
+  }
+
+  movePopup(event: MouseEvent) {
+    if (this.popupVisible) {
+      this.updatePopupPosition(event);
+    }
+  }
+
+  // hidePopup() {
+  //   this.popupVisible = false;
+  //   this.popupData = null;
+
+  //   // Stop counter
+  //   if (this.counterInterval) {
+  //     clearInterval(this.counterInterval);
+  //     this.counterInterval = null;
+  //   }
+  // }
+
+  private updatePopupPosition(event: MouseEvent) {
+    const padding = 20;
+    const popupWidth = 250;
+    const popupHeight = 180;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    let x = event.clientX + 15;
+    let y = event.clientY + 15;
+
+    if (x + popupWidth > viewportWidth) {
+      x = event.clientX - popupWidth - 15;
+    }
+    if (y + popupHeight > viewportHeight) {
+      y = event.clientY - popupHeight - 15;
+    }
+
+    this.popupX = x;
+    this.popupY = y;
+  }
+
+  // movePopup(event: MouseEvent) {
+  //   this.popupX = event.pageX + 15;
+  //   this.popupY = event.pageY + 15;
+  // }
+
+  // hidePopup() {
+  //   this.popupVisible = false;
+  //   this.popupData = null;
+  //   clearInterval(this.interval);
+  // }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.status-filter-dropdown')) this.showStatusFilter = false;
+    if (!target.closest('.active-filter-dropdown')) this.showActiveFilter = false;
+  }
+
+  // ================= Counter Logic =================
+  private resetCounters() {
+    this.counters = { RED: 0, GREEN: 0, YELLOW: 0 };
+    if (this.popupData) this.counters[this.popupData.status] = this.duration;
+  }
+
+  startCounter() {
+    clearInterval(this.interval);
+    if (!this.popupData) return;
+
+    this.resetCounters();
+
+    this.interval = setInterval(() => {
+      if (!this.popupData) return;
+
+      const status = this.popupData.status;
+      this.counters[status]--;
+
+      if (this.counters[status] <= 0) {
+        this.switchStatus(this.nextStatus(status));
+      }
+    }, 1000);
+  }
+
+  private nextStatus(current: 'RED' | 'GREEN' | 'YELLOW'): 'RED' | 'GREEN' | 'YELLOW' {
+    const order: ('RED' | 'GREEN' | 'YELLOW')[] = ['RED', 'GREEN', 'YELLOW'];
+    return order[(order.indexOf(current) + 1) % order.length];
+  }
+
+  switchStatus(nextStatus: 'RED' | 'GREEN' | 'YELLOW') {
+    if (this.popupData) {
+      this.popupData.status = nextStatus;
+      this.startCounter();
+    }
+  }
+
+  // ================= Filters Logic =================
   get filteredTraffics(): Traffic[] {
     return this.traffics.filter((traffic) => {
       const matchesSearch =
         traffic.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         traffic.id.toString().includes(this.searchTerm);
-      const matchesStatus = this.statusFilter[traffic.active ? 'GREEN' : 'RED'];
+      const matchesStatus = this.statusFilter[traffic.status];
       const matchesActive =
         this.activeFilter === 'ALL' ||
         (this.activeFilter === 'ACTIVE' && traffic.active) ||
         (this.activeFilter === 'INACTIVE' && !traffic.active);
+
       return matchesSearch && matchesStatus && matchesActive;
     });
-  }
-
-  get paginatedTraffics(): Traffic[] {
-    const start = (this.currentPage - 1) * this.pageSize;
-    return this.filteredTraffics.slice(start, start + this.pageSize);
-  }
-
-  get totalPages(): number {
-    return Math.ceil(this.filteredTraffics.length / this.pageSize) || 1;
-  }
-
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-    }
-  }
-
-  nextPage() {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-    }
-  }
-
-  prevPage() {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-    }
-  }
-
-  get allStatusSelected(): boolean {
-    return Object.values(this.statusFilter).every((value) => value);
-  }
-
-  get someStatusSelected(): boolean {
-    return Object.values(this.statusFilter).some((value) => value) && !this.allStatusSelected;
-  }
-
-  toggleActive(traffic: Traffic) {
-    traffic.active = !traffic.active;
-  }
-
-  changeStatus(traffic: Traffic) {
-    const order: ('RED' | 'GREEN' | 'YELLOW')[] = ['RED', 'GREEN', 'YELLOW'];
-    const index = order.indexOf(traffic.active ? 'GREEN' : 'RED');
-    traffic.name = order[(index + 1) % order.length];
   }
 
   toggleStatusFilter(status: string) {
@@ -359,9 +337,17 @@ export class TrafficSignalsComponent {
 
   toggleAllStatusFilters() {
     const allSelected = this.allStatusSelected;
-    Object.keys(this.statusFilter).forEach((key) => {
-      this.statusFilter[key] = !allSelected;
-    });
+    Object.keys(this.statusFilter).forEach(
+      (key) => (this.statusFilter[key as 'RED' | 'GREEN' | 'YELLOW'] = !allSelected)
+    );
+  }
+
+  get allStatusSelected(): boolean {
+    return Object.values(this.statusFilter).every((v) => v);
+  }
+
+  get someStatusSelected(): boolean {
+    return Object.values(this.statusFilter).some((v) => v) && !this.allStatusSelected;
   }
 
   toggleStatusFilterDropdown() {
@@ -372,5 +358,32 @@ export class TrafficSignalsComponent {
   toggleActiveFilterDropdown() {
     this.showActiveFilter = !this.showActiveFilter;
     if (this.showActiveFilter) this.showStatusFilter = false;
+  }
+
+  // ================= Pagination Logic =================
+  get paginatedTraffics(): Traffic[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredTraffics.slice(start, start + this.pageSize);
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredTraffics.length / this.pageSize) || 1;
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) this.currentPage = page;
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) this.currentPage++;
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) this.currentPage--;
+  }
+
+  // ================= Misc =================
+  toggleActive(traffic: Traffic) {
+    traffic.active = !traffic.active;
   }
 }

@@ -358,7 +358,7 @@
 }
 /* 📌 Popup Container */
 .traffic-popup {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   transform: translate(10px, 10px);
@@ -372,6 +372,7 @@
   max-width: 200px;
   pointer-events: none;
   transition: opacity 0.2s ease, transform 0.2s ease;
+  overflow: auto;
 }
 
 .traffic-popup h3 {
@@ -406,6 +407,11 @@
 }
 
 .status-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  position: relative;
   margin: 6px 0;
   padding: 8px;
   font-size: 18px;
@@ -439,4 +445,9 @@
 
 .status-box.yellow.active {
   color: #fbc531;
+}
+.counter {
+  font-size: 12px;
+  font-weight: bold;
+  color: #333;
 }
