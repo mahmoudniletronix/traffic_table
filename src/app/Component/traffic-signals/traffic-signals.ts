@@ -23,6 +23,7 @@ export class TrafficSignalsComponent implements OnInit, OnDestroy {
 
   //
   currentStatus: 'RED' | 'GREEN' | 'YELLOW' = 'RED';
+  popupEl: any;
 
   // الحالة العكسية (للعمود التاني)
   get oppositeStatus(): 'RED' | 'GREEN' | 'YELLOW' {
@@ -218,9 +219,7 @@ export class TrafficSignalsComponent implements OnInit, OnDestroy {
   showPopup(traffic: Traffic, event: MouseEvent) {
     this.popupData = traffic;
     this.popupVisible = true;
-
     this.updatePopupPosition(event);
-
     this.startCounter();
   }
 
@@ -233,26 +232,9 @@ export class TrafficSignalsComponent implements OnInit, OnDestroy {
   }
 
   movePopup(event: MouseEvent) {
-    const popupWidth = 220;
-    const popupHeight = 180;
-    const offset = 10;
-
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-
-    let x = event.clientX + offset;
-    let y = event.clientY + offset;
-
-    if (x + popupWidth > viewportWidth) {
-      x = event.clientX - popupWidth - offset;
+    if (this.popupVisible) {
+      this.updatePopupPosition(event);
     }
-
-    if (y + popupHeight > viewportHeight) {
-      y = event.clientY - popupHeight - offset;
-    }
-
-    this.popupX = x + window.scrollX;
-    this.popupY = y + window.scrollY;
   }
 
   // hidePopup() {
@@ -267,30 +249,26 @@ export class TrafficSignalsComponent implements OnInit, OnDestroy {
   // }
 
   private updatePopupPosition(event: MouseEvent) {
-    const padding = 15;
-    const popupWidth = 250;
-    const popupHeight = 180;
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
+    const offset = 12; // مسافة صغيرة بين الماوس والبوب أب
+    const sx = window.scrollX;
+    const sy = window.scrollY;
 
-    let x = event.clientX + padding;
-    let y = event.clientY + padding;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
 
-    // ✅ لو البوب-اب هيطلع برا الشاشة من اليمين
-    if (x + popupWidth > viewportWidth) {
-      x = event.clientX - popupWidth - padding;
-      if (x < 0) x = viewportWidth - popupWidth - padding; // fallback لو ضاق قوي
+    const pw = this.popupEl?.nativeElement.offsetWidth || 220;
+    const ph = this.popupEl?.nativeElement.offsetHeight || 180;
+
+    let x = event.clientX + sx + offset;
+    let y = event.clientY + sy + offset;
+
+    if (event.clientX + pw + offset > vw) {
+      x = event.clientX + sx - pw - offset;
     }
 
-    // ✅ لو البوب-اب هيطلع برا الشاشة من تحت
-    if (y + popupHeight > viewportHeight) {
-      y = event.clientY - popupHeight - padding;
-      if (y < 0) y = viewportHeight - popupHeight - padding; // fallback لو ضاق قوي
+    if (event.clientY + ph + offset > vh) {
+      y = event.clientY + sy - ph - offset;
     }
-
-    // ✅ ضمان إن البوب-اب مش يخرج برا الشمال أو فوق
-    if (x < 0) x = padding;
-    if (y < 0) y = padding;
 
     this.popupX = x;
     this.popupY = y;
