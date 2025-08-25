@@ -233,9 +233,26 @@ export class TrafficSignalsComponent implements OnInit, OnDestroy {
   }
 
   movePopup(event: MouseEvent) {
-    if (this.popupVisible) {
-      this.updatePopupPosition(event);
+    const popupWidth = 220;
+    const popupHeight = 180;
+    const offset = 10;
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    let x = event.clientX + offset;
+    let y = event.clientY + offset;
+
+    if (x + popupWidth > viewportWidth) {
+      x = event.clientX - popupWidth - offset;
     }
+
+    if (y + popupHeight > viewportHeight) {
+      y = event.clientY - popupHeight - offset;
+    }
+
+    this.popupX = x + window.scrollX;
+    this.popupY = y + window.scrollY;
   }
 
   // hidePopup() {
@@ -250,21 +267,30 @@ export class TrafficSignalsComponent implements OnInit, OnDestroy {
   // }
 
   private updatePopupPosition(event: MouseEvent) {
-    const padding = 20;
+    const padding = 15;
     const popupWidth = 250;
     const popupHeight = 180;
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
 
-    let x = event.clientX + 15;
-    let y = event.clientY + 15;
+    let x = event.clientX + padding;
+    let y = event.clientY + padding;
 
+    // ✅ لو البوب-اب هيطلع برا الشاشة من اليمين
     if (x + popupWidth > viewportWidth) {
-      x = event.clientX - popupWidth - 15;
+      x = event.clientX - popupWidth - padding;
+      if (x < 0) x = viewportWidth - popupWidth - padding; // fallback لو ضاق قوي
     }
+
+    // ✅ لو البوب-اب هيطلع برا الشاشة من تحت
     if (y + popupHeight > viewportHeight) {
-      y = event.clientY - popupHeight - 15;
+      y = event.clientY - popupHeight - padding;
+      if (y < 0) y = viewportHeight - popupHeight - padding; // fallback لو ضاق قوي
     }
+
+    // ✅ ضمان إن البوب-اب مش يخرج برا الشمال أو فوق
+    if (x < 0) x = padding;
+    if (y < 0) y = padding;
 
     this.popupX = x;
     this.popupY = y;
