@@ -148,9 +148,11 @@
   <div class="footer">
     <p>Showing {{ paginatedTraffics.length }} of {{ filteredTraffics.length }} traffic signals</p>
     <div class="pagination">
-      <button (click)="prevPage()" [disabled]="currentPage === 1">Previous</button>
+      <button class="prev-btn" (click)="prevPage()" [disabled]="currentPage === 1">Previous</button>
       <span>Page {{ currentPage }} of {{ totalPages }}</span>
-      <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+      <button class="next-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next
+      </button>
     </div>
   </div>
 </div>

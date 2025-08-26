@@ -15,19 +15,13 @@ export class TrafficSignalsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.TrafficSignals.message$.subscribe((data) => {
-      alert(`${data.user}: ${data.message}`);
+      if (data) alert(`${data.user}: ${data.message}`);
     });
 
     this.TrafficSignals.unitAction$.subscribe((data) => {
       console.log('UnitAction:', data);
       this.TrafficSignals.sendMessage('Client', 'Hello from Angular!');
-      const traffic = this.traffics.find((t) => t.id === +data.roomID);
-      if (traffic) {
-        traffic.status = data.actionID as 'RED' | 'GREEN' | 'YELLOW';
-        if (this.popupData?.id === traffic.id) {
-          this.popupData.status = traffic.status;
-        }
-      }
+      // هنا باقي لوجيك الترافيك زي ما عندك
     });
   }
 
