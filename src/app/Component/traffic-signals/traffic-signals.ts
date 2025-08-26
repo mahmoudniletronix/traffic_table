@@ -1,3 +1,4 @@
+import { TrafficSignals } from './../../services/traffic-signals';
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -10,6 +11,26 @@ import { Traffic } from '../../models/traffic-signal.model';
   styleUrls: ['./traffic-signals.css'],
 })
 export class TrafficSignalsComponent implements OnInit, OnDestroy {
+  constructor(private TrafficSignals: TrafficSignals) {}
+
+  ngOnInit() {
+    this.TrafficSignals.message$.subscribe((data) => {
+      alert(`${data.user}: ${data.message}`);
+    });
+
+    this.TrafficSignals.unitAction$.subscribe((data) => {
+      console.log('UnitAction:', data);
+      this.TrafficSignals.sendMessage('Client', 'Hello from Angular!');
+      const traffic = this.traffics.find((t) => t.id === +data.roomID);
+      if (traffic) {
+        traffic.status = data.actionID as 'RED' | 'GREEN' | 'YELLOW';
+        if (this.popupData?.id === traffic.id) {
+          this.popupData.status = traffic.status;
+        }
+      }
+    });
+  }
+
   // ================= Pagination =================
   pageSize = 10;
   currentPage = 1;
@@ -53,10 +74,10 @@ export class TrafficSignalsComponent implements OnInit, OnDestroy {
   showStatusFilter = false;
   showActiveFilter = false;
 
-  // ================= Table Headers =================
+  // ================= Table Headers ================= //
   tableHeaders: string[] = ['ID', 'IP Address', 'Traffic Name', 'Active'];
 
-  // ================= Colors / Labels =================
+  // ================= Colors / Labels ================= //
   statusColors: { [key: string]: string } = {
     RED: '#ff4757',
     GREEN: '#2ed573',
@@ -210,7 +231,6 @@ export class TrafficSignalsComponent implements OnInit, OnDestroy {
   ];
 
   // ================= Lifecycle =================
-  ngOnInit() {}
   ngOnDestroy() {
     clearInterval(this.interval);
   }
