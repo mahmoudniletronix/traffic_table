@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { BehaviorSubject } from 'rxjs';
-import { Traffic } from '../models/traffic-signal.model';
 
 @Injectable({
   providedIn: 'root',
@@ -25,11 +24,13 @@ export class TrafficSignals {
       .configureLogging(signalR.LogLevel.Information)
       .build();
 
-    this.hubConnection.on('receiveMessage', (user, message) => {
-      this.messageSource.next({ user, message });
+    // Listen for messages from the server
+    this.hubConnection.on('receiveMessage', (name: string, message: string) => {
+      this.messageSource.next({ name, message });
     });
 
-    this.hubConnection.on('unitAction', (data) => {
+    // Listen for unit actions if needed
+    this.hubConnection.on('unitAction', (data: any) => {
       this.unitActionSource.next(data);
     });
 
@@ -39,9 +40,10 @@ export class TrafficSignals {
       .catch((err) => console.error('Error while starting connection: ' + err));
   }
 
-  sendMessage(user: string, message: string) {
+  // Send a message to the server
+  sendMessage(name: string, message: string) {
     if (this.hubConnection) {
-      this.hubConnection.invoke('sendMessage', user, message);
+      this.hubConnection.invoke('sendMessage', name, message);
     }
   }
 }

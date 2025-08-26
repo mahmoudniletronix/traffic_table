@@ -15,13 +15,30 @@ export class TrafficSignalsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.TrafficSignals.message$.subscribe((data) => {
-      if (data) alert(`${data.user}: ${data.message}`);
+      if (data) {
+        // Show an alert or update UI
+        alert(`${data.name}: ${data.message}`);
+        // Optionally, update a message list or log
+        // this.messages.push(data);
+      }
     });
 
+    // Handle incoming unit actions (e.g., traffic light status updates)
     this.TrafficSignals.unitAction$.subscribe((data) => {
-      console.log('UnitAction:', data);
-      this.TrafficSignals.sendMessage('Client', 'Hello from Angular!');
-      // هنا باقي لوجيك الترافيك زي ما عندك
+      if (data) {
+        // Example: update traffic signals based on received action
+        // Assuming data: { L1: string, T: number, L2: string }
+        // Find the traffic signal by name or ID and update its status
+        const traffic = this.traffics.find((t) => t.name === data.L1);
+        if (traffic) {
+          // You can update status, timer, or other properties
+          traffic.status = data.L2 as 'RED' | 'GREEN' | 'YELLOW';
+          // Optionally, update timer or other fields
+          // traffic.timer = data.T;
+        }
+        // Optionally, send a message back to the server
+        // this.TrafficSignals.sendMessage('Client', 'Status updated!');
+      }
     });
   }
 

@@ -83,6 +83,14 @@
             {{ traffic.active ? activeLabel : inactiveLabel }}
           </span>
         </td>
+        <!-- <td>
+          <span
+            class="status-dot"
+            [style.background]="statusColors[traffic.status]"
+            [title]="traffic.status"
+          ></span>
+          {{ traffic.status }}
+        </td> -->
       </tr>
 
       <tr *ngIf="paginatedTraffics.length === 0">
