@@ -249,7 +249,7 @@ export class TrafficSignalsComponent implements OnInit, OnDestroy {
   // }
 
   private updatePopupPosition(event: MouseEvent) {
-    const offset = 12; // مسافة صغيرة بين الماوس والبوب أب
+    const offset = 5;
     const sx = window.scrollX;
     const sy = window.scrollY;
 
@@ -259,19 +259,19 @@ export class TrafficSignalsComponent implements OnInit, OnDestroy {
     const pw = this.popupEl?.nativeElement.offsetWidth || 220;
     const ph = this.popupEl?.nativeElement.offsetHeight || 180;
 
-    let x = event.clientX + sx + offset;
-    let y = event.clientY + sy + offset;
+    let x = event.clientX + offset;
+    let y = event.clientY - ph - offset;
 
-    if (event.clientX + pw + offset > vw) {
-      x = event.clientX + sx - pw - offset;
+    if (x + pw > vw) {
+      x = event.clientX - pw - offset;
     }
 
-    if (event.clientY + ph + offset > vh) {
-      y = event.clientY + sy - ph - offset;
+    if (y < 0) {
+      y = event.clientY + offset;
     }
 
-    this.popupX = x;
-    this.popupY = y;
+    this.popupX = x + sx;
+    this.popupY = y + sy;
   }
 
   // movePopup(event: MouseEvent) {
